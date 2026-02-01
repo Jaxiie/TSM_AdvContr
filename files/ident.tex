@@ -17,6 +17,9 @@ $G_c(j\omega)$ point-wise.
     \includegraphics[width=8cm]{bilder/ident_bode.png}
 \end{minipage}
 
+For creation of Bode plot apply testsignal, wait for transiant to decay and measure $B \& \varphi$,
+calculate the gain and insert date in Plot.
+
 \paragraph{Discrete-Time Case}
 If the signals $u$ and $y$ are sampled at times $t = kT$, an input
 $u(kT) = A \cdot \sin(\omega_0 k T)$
@@ -26,11 +29,11 @@ will create the expected output signal
     = B_c \cdot \cos(\omega_0 k T) + B_s \cdot \sin(\omega_0 k T)
 \]
 where $B = \sqrt{B_c^2 + B_s^2}$ and $\varphi = \arctan\frac{B_c}{B_s}$.
-The sample time $T$ and the number of samples $N$ are chosen to be $T \cdot N = \frac{2\pi}{\omega_0}$.
+The sample time $T$ and the number of samples $N$ are chosen to be $T \cdot N = \frac{2\pi}{\omega_0}l$.
 Then the $B_c$ and $B_s$ which minimize the quadratic cost function reduce to
 \begin{align*}
-    B_c &= \frac{2}{N}\sum_{k=0}^{N-1} y(kT) \cos(2\pi lk/N) &
-    B_s &= \frac{2}{N}\sum_{k=0}^{N-1} y(kT) \sin(2\pi lk/N)
+    B_c &= \frac{2}{N}\sum_{k=0}^{N-1} y(kT) \cos\left(\frac{2\pi lk}{N}\right) &
+    B_s &= \frac{2}{N}\sum_{k=0}^{N-1} y(kT) \sin\left(\frac{2\pi lk}{N}\right)
 \end{align*}
 from which the values $B$ and $\varphi$ can be calculated.
 This results in one point of the frequency response $B/A \cdot e^{j\varphi}$.
@@ -38,12 +41,12 @@ This results in one point of the frequency response $B/A \cdot e^{j\varphi}$.
 \subsubsection{Several Frequencies at Once}
 The formulas for $B_c$ and $B_s$ are similar to the DFT, which is given by
 \[
-    \operatorname{DFT}\{f(kT)\} = F_n = \sum_{k=0}^{N-1} f(kT) e^{-j2\pi nk/N}
+    \operatorname{DFT}\{f(kT)\} = F_n = \sum_{k=0}^{N-1} f(kT) e^{-j\frac{2\pi nk}{N}}
 \]
-where $F_n = F(\frac{2\pi n}{NT})$ is the frequency component at the frequency $\omega = \frac{2\pi n}{NT}$.
+where $F_n = F\left(\frac{2\pi n}{NT}\right)$ is the frequency component at the frequency $\omega = \frac{2\pi n}{NT}$.
 Using e.g. white noise or chirp signals as input signal $u$, one can calculate the frequency response by
 \[
-    G_d(e^{j\omega_0 T}) = \frac{\operatorname{DFT}\{y(kT)\}}{\operatorname{DFT}\{u(kT)\}} = \frac{B_s + jB_c}{A}
+    G_d(e^{j\omega_0 T}) = \frac{\operatorname{DFT}\{y(kT)\}}{\operatorname{DFT}\{u(kT)\}} = \frac{B_s + jB_c}{A} = \frac{B}{A}e^{j\varphi}
 \]
 
 \subsubsection{Further Nonparametric Methods}
@@ -57,6 +60,7 @@ Using e.g. white noise or chirp signals as input signal $u$, one can calculate t
     y(kT) &= A \cdot g_d(kT) + v(kT)
 \end{align*}
 where $v$ is a disturbance and $g_d(kT)$ is the discrete impulse response of the system.
+if $v=0$ $\hat{g}_d=\frac{y(kT)}{A}$ else $\hat{g}_d =\frac{y(kT)-v(kT)}{A}$
 
 \paragraph{Step Response} A discrete-time step at the input leads to:
 \begin{align*}
@@ -87,6 +91,8 @@ If no disturbance $v$ is present, this can be recursively solved for $g_d$ by
 These techniques are \emph{only} applicable to LTI systems.
 
 \subsection{Parametric Identification}
+The q-operator shift signal by one time step $y(k-1)=q^{-1}y(k)$
+
 A general model for SISO systems with disturbance $e(k)$ is given by
 \[
     A(q) \cdot y(k) = \frac{B(q)}{F(q)} \cdot u(k) + \frac{C(q)}{D(q)}\cdot e(k)
@@ -112,6 +118,7 @@ is \emph{identifiable}, the parameter vector
 $\theta_2 = [f \; J_{\alpha} \; J_{\beta} \; \Phi \; R \; K_P \; K_{\mu}]^T$
 is \emph{not}, as the model only has five independent matrix entires.
 Additional knowledge, e.g. from a datasheet is needed.
+Physical parameters are \emph{not} necessairly identifiable.
 
 \subsubsection{Basics of Least Squares (LS)}
 Least squares minimizes the sum of squared errors.
@@ -126,6 +133,27 @@ If the system is overdetermined, the least squares solution is
     \theta = (\Phi^T \Phi)^{-1} \Phi^T y
 \]
 
+for $y=f(x)=ax^2+b$ with measured \(x\) and \(y\):
+
+\[
+    y=\begin{bmatrix}y_{1} \\
+         y_{2} \\ 
+         y_{3} \\ 
+         \vdots
+    \end{bmatrix}=
+    \begin{bmatrix}ax_{1}^{2}+b \\
+         ax_{2}^{2}+b \\
+         \vdots\\
+         \vdots
+    \end{bmatrix}=
+    \underbrace{ \begin{bmatrix}x_{1}^{2} & 1 \\
+         x_{2}^{2} & 1 \\ 
+         x_{3}^{2} & 1 \\ 
+         \vdots & \vdots
+    \end{bmatrix} }_{ \Phi }
+    \underbrace{ \begin{bmatrix}a \\
+         b\end{bmatrix} }_{ \Theta }
+\]
 \subsubsection{Weighted Least Squares}
 Introducing a weighting matrix $L$, the problem becomes $L y = L \Phi \theta$
 with the solution
@@ -163,7 +191,7 @@ the new values at time $N+1$ are found by the recursive formulas
 \paragraph{Forgetting Factor}
 In a slowly time-variant system, old measurements should be forgotten gradually. 
 This is achieved by using a \emph{forgetting factor} $\lambda\in]0,1]$ 
-(typical values: $0.9 < \lambda < 0.98$) and
+(typical values: $0.9 < \lambda < 0.98$) and entries \(<1\) are less important
 \[
     V^{-1} = L^T L = \begin{bmatrix}
         \lambda^N & 0 &\dots & 0 \\
@@ -182,6 +210,21 @@ Which leads to the recursive formulas
 
 \paragraph{Identificatoin Cycle}The identification process is an iterative task.
 \paragraph{Sampling Time}An anti-aliasing filter $G_{f}$ must be applied to the analog signal.
+Controller and data aquisition is discrete and has usually the same sampling time.
+The smaller the better, but too small can lead to numerical problems
+\paragraph{Identification of Open-Loop System} give an random input and measure output, fails at unstable system, is simpler
 \paragraph{Identification of Closed-Loop Systems} A plant might be unstable or
-in use for production, or it might contain some built-in feedback mechanisms.
+in use for production (time-varying), or it might contain some built-in feedback mechanisms.
 Then the plant has to be identified in a closed loop.
+
+\subsection{System Identification Matlab}
+Matlab command: \dq systemIdentification\dq{} 
+
+load Data $\rightarrow$ preprocess Data $\rightarrow$ estimate Model
+
+\begin{itemize}
+    \item preprocess: remove mean and select range (faster: Quickstart)
+    \item estimate: choose Model (State Space, Transferfunction)
+\end{itemize}
+
+overfitting analysis with pole zero plot, when ther are pole zero cancellations (zeros and poles at same place) its a sign of overfitting

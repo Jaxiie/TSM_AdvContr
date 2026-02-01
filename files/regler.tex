@@ -15,13 +15,13 @@ The plant is a \emph{low-pass} system and $D=0$.
     \]
     where
     \[
-        K_{vf} = (C(-A+BK)^{-1}B)^{-1}
+        K_{vf} = (C(sI-A+BK)^{-1}B)^{-1}
     \]
 \end{minipage}
 \hspace{0.5cm}
 \begin{minipage}{8cm}
     \centering
-    \includegraphics[width=\linewidth]{./bilder/statereg.png}
+    \includegraphics[width=\linewidth]{./bilder/statereg (2).png}
 \end{minipage}
 
 \subsection{Pole Placement}
@@ -29,7 +29,7 @@ The plant is a \emph{low-pass} system and $D=0$.
 Controllability ensures that the eigenvalues of $A_g$ can be placed arbitrarily by choice of $K$
 To achieve some desired eigenvalues, the following must hold:
 \[
-    \det(\lambda I-A+BK) = (\lambda - \lambda_1)...(\lambda - \lambda_n)
+    \det(\lambda I-A+BK) = (\lambda - \lambda_1)(\lambda - \lambda_2)...(\lambda - \lambda_n)
 \]
 Some considerations:
 \begin{itemize}
@@ -38,6 +38,8 @@ Some considerations:
     \item Transients should be well damped: $\zeta > \frac{1}{\sqrt{2}}$
     \item Upper bound to save energy $\sigma < \sigma_2$
 \end{itemize}
+
+Place as many poles as the number of states that the system has.
 
 \end{minipage}
 \hspace{0.5cm}
@@ -50,41 +52,43 @@ Some considerations:
 General consideration: minimize a cost function (performance index) $J = f(K)$.
 General notation:
 \[
-    J = f(K) = \int_{0}^{t_f} g(x,u) dt
+    J = f(K) = \int_{0}^{t_f} g(x,u)\, dt = \int_{0}^{t_f} x^{\mathsf{T}}Qx\, dt
 \]
 We define $H = A - BK$ and introduce a positive semidefinite weighting matrix $Q$.
-To minimize the norm of the state variable $x$: $|x|^2 = x^Tx$, we get:
+To minimize the norm of the state variable $x$: $|x|^2 = x^{\mathsf{T}}x$, we get:
 \begin{align*}
-    J &= \int_0^{\infty} x^T Q x \, dt = x^T(0) P x(0) & \text{and} && (H^TP + PH) &= -Q
+    J &= \int_0^{\infty} x^{\mathsf{T}} Q x \, dt = x^{\mathsf{T}}(0) P x(0) & \text{and} && (H^{\mathsf{T}}P + PH) &= -Q
 \end{align*}
 
 Design steps:
 \begin{enumerate}
     \item Determine the matrix $P$, where $H$ and $Q$ are assumed to be known.
-    \item Minimize $J = x^T(0) P x(0)$ by adjusting system parameters.
+    \item Minimize $J = x^{\mathsf{T}}(0) P x(0)$ by adjusting system parameters.
 \end{enumerate}
 
 \subsection{Linear Quadratic Regulator (LQR)}
 To consider the control energy of $u$, the performance index becomes
 \[
-    J = \int_{0}^{\infty} (x^T Q x + u^T R u) dt
+    J = \int_{0}^{\infty} (x^{\mathsf{T}} Q x + u^{\mathsf{T}} R u)\, dt
 \]
 where $Q$ and $R$ are positive definite.
 $J$ is minimized with
 \[
-    K = R^{-1} B^T P
+    K = R^{-1} B^{\mathsf{T}} P
 \]
 $P$ is calculated with the algebraic matrix Riccati (ARE), which is a quadratic equation.
 Only the positive definite solution of $P$ is valid.
 \[
-    A^T P + P A - P B R^{-1} B^T P = -Q
+    A^{\mathsf{T}} P + P A - P B R^{-1} B^{\mathsf{T}} P = -Q
 \]
 
 Design steps:
 \begin{enumerate}
     \item Determine $P$, where $Q$ and $R$ have to be known (often $I$).
-    \item Calculate $K = R^{-1} B^T P$
+    \item Calculate $K = R^{-1} B^{\mathsf{T}} P$
 \end{enumerate}
+
+If the system is not fully controllable, lets hope the states that are not controllable are stable.
 
 \paragraph{Robustness}If the control loop is opened at the input $u$, the open
 loop transfer function becomes $G_0(s) = K (sI-A)^{-1} B$.
@@ -93,40 +97,43 @@ From this a phase margin of $\pm 60^{\circ}$ and a gain margin $>0.5$ can be
 calculated.
 This makes LQR a very robust controller.
 
-\subsection{State Regulator with Integral Part}
+\subsection{LQI Linear Quadratic Integral}
 \begin{minipage}{10cm}
     A regulator with $K_1$ containing an integral part can be designed by
     viewing $K_1$ and $K_2$ as cascaded controllers.
     The controller can then be designed in two steps: a faster inner loop (e.g. LQR)
     and a slower outer loop (often PI-controller).
     
-    To calculate $K_1$ and $K_2$ at once, one defines the error $e = y-r$ and the
-    intermediate variables $z = \dot{x}$ and $w=\dot{u}$. Then:
+    To calculate $K_1$ and $K_2$ at once, one defines the error $e = y-r$. Then:
     \[
-        \underbrace{\begin{bmatrix}
-        \dot{e} \\ \dot{z}
+        \underbrace{\dot{x}_{PI} =\begin{bmatrix}
+        \dot{x} \\ \dot{x}_I
         \end{bmatrix}}_{\dot{\hat{x}}}
       = \underbrace{\begin{bmatrix}
-            0 & C \\ 0 & A
+            A & 0 \\ C & 0
         \end{bmatrix}}_{\hat{A}}
         \underbrace{\begin{bmatrix}
-            e \\ z
+            x \\ x_I
         \end{bmatrix}}_{\hat{x}}
       + \underbrace{\begin{bmatrix}
-            0 \\ B
+            B \\ 0
         \end{bmatrix}}_{\hat{B}}
-        \underbrace{w}_{\hat{u}}
+        \underbrace{u}_{\hat{u}}
     \]
-   
+ 
 \end{minipage}
 \hspace{0.5cm}
 \begin{minipage}{8cm}
     \centering
-    \includegraphics[width=8cm]{./bilder/statereg_int.png}
+    \includegraphics[width=8cm]{./bilder/statereg_int (2).png}
 \end{minipage}
 
 Now the feedback gain $\hat{K}$ which stabilizes this equation can be designed
 e.g. by LQR or pole placement.
+
+    \[
+        u = K_{PI}\cdot x_{PI}= \begin{bmatrix}\hat{K}&K_I\end{bmatrix}\cdot x_{PI} 
+    \]
 
 \subsection{State Regulator with Observer}
 \begin{minipage}{10cm}
@@ -139,22 +146,22 @@ e.g. by LQR or pole placement.
     The observer can be calculated by LQR in a dual way by using the following correspondences:
     \begin{align*}
         \text{Regulator} &\Leftrightarrow \text{Observer} & \text{Regulator} &\Leftrightarrow \text{Observer} \\
-        P_c &\Leftrightarrow P_o^T &
-        B &\Leftrightarrow C^T \\
-        A &\Leftrightarrow A^T &
-        K &\Leftrightarrow H^T
+        P_c &\Leftrightarrow P_o^{\mathsf{T}} &
+        B &\Leftrightarrow C^{\mathsf{T}} \\
+        A &\Leftrightarrow A^{\mathsf{T}} &
+        K &\Leftrightarrow H^{\mathsf{T}}
     \end{align*}
     The calculation of the optimal $H$ is called the \emph{Linear Quadratic Gaussian (LQG)} problem and is
     \begin{enumerate}
-        \item $AP + PA^T - PC^TR^{-1}CP = -Q$ which deliveres $P$
-        \item $H = (R^{-1}CP)^T = PC^TR^{-1}$
+        \item $AP + PA^{\mathsf{T}} - PC^{\mathsf{T}}R^{-1}CP = -Q$ which deliveres $P$
+        \item $H = (R^{-1}CP)^{\mathsf{T}} = PC^{\mathsf{T}}R^{-1}$
     \end{enumerate}
     
 \end{minipage}
 \hspace{0.5cm}
 \begin{minipage}{8cm}
     \centering
-    \includegraphics[width=7cm]{./bilder/observer.png}
+    \includegraphics[width=8cm]{./bilder/observer (2).png}
 \end{minipage}
 
 \subsection{Combined LQR and LQG design}
@@ -211,7 +218,7 @@ any guaranteed margin.
 If some robustness is required, the LQR and LQG designs cannot be carried out independently.
 \begin{enumerate}
     \item Design LQR with arbitrary weighting matrices, resulting in a regulator gain $K$.
-    \item Do LQG design with $Q = \rho B B^T$ and $R = I$, resulting in an observer gain $H$.
+    \item Do LQG design with $Q = \rho B B^{\mathsf{T}}$ and $R = I$, resulting in an observer gain $H$.
 \end{enumerate}
 Then, if $G(s)$ is minimum-phase,
 \[
@@ -224,9 +231,18 @@ becomes
 \[
     \hat{G}_0(s) = C(sI-A)^{-1} B \cdot K(sI - A + BK + HC)^{-1} H
 \]
-With $Q =\rho C^T C$ and $R=I$, the LQR design design recovers the LQG loop transfer function,
+With $Q =\rho C^{\mathsf{T}} C$ and $R=I$, the LQR design design recovers the LQG loop transfer function,
 which leads to
 \[
     \lim_{\rho\to\infty} = C(sI-A)^{-1}H = G_{0,obs}(s)
 \]
 which is called the dual LQG/LTR method.
+
+
+\begin{tabularx}{\linewidth}{lrll}
+\textbf{Kalman filter} &                               &\textbf{LQR/LQG Recovery} &                \\
+$\boldsymbol{Q} = \rho\boldsymbol{BB^{\mathsf{T}}}$ &  & $\boldsymbol{Q} = \boldsymbol{C}^{\mathsf{T}}I\boldsymbol{C}$  \\
+$\boldsymbol{R} = \boldsymbol{\mu \beta}$           &  & $\boldsymbol{R} = \rho\boldsymbol{I}$                          \\
+$\mu > 0$                                           &  & $\rho > 0$     \\
+$\beta \ge 1$ typical $2-4$            &                             
+\end{tabularx}

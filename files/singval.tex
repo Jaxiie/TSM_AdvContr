@@ -1,0 +1,50 @@
+\section{Singular Value}
+
+\subsection{Prelaminar}
+Singular values are also for non-square matrices.
+The Hermitian is the conjuate and transpose of a Matrix \(A^{\mathsf{H}}=(A*)^{\mathsf{T}}\).
+
+\paragraph{Norms}
+The Euclidean vector norm is: $$||u||_2=\sqrt{|u_1|^2+|u_2|^2+\dots+|u_q|^2}=\sqrt{u^{\mathsf{H}}u}$$
+and the Induced matrix norm is: $$||N||_2=\sqrt{\lambda_{max}(N^{\mathsf{H}}N)}$$
+
+\paragraph{Null space} Set of all possible $x$ such that $Mx$ results to zero,
+$\operatorname{Null}(M)=\ker(M)$ also the $\operatorname{span}(V_{12})$
+
+\paragraph{Image} Set of all possible outputs $Mx$ that can be obtained for any input $x$, 
+$\operatorname{Image}(M)$ is $\operatorname{span}(U_1)$
+
+\subsection{Singular Value Decomposition}
+$\sigma$ is the singular value $\sigma_{i}(N)=\sqrt{\lambda_{i}(N^\mathsf{H}N)}$
+
+$N = U\Sigma V^\mathsf{H}$ the singular values are on the main diagonal of $\Sigma$
+
+$[p\times q]=[p\times p][p\times q][q\times q]$ dimensions of the SVD
+
+$U$ are the eigenvectors of $NN^\mathsf{H}$ left or output singular vectors and
+$V$ are the eigenvectors of $N^\mathsf{H}N$ right or input singular vectors
+
+\subsubsection{Least-Squares with SVD}
+Find the regressor matrix \(\Phi\) with a polynom of the function $[u_0^2,u_2^2,...,\sin(w*u)]$
+
+\[
+    \widehat{\Theta}=(\Phi^{\mathsf{H}}\Phi)^{-1}\Phi^{\mathsf{H}}y=\Phi^{\dagger}y
+\]
+
+with pseudoinverse computed by the SVD:
+\[
+    \Phi^{\dagger}=V\Sigma^{-1}U^{\mathsf{H}}
+\]
+
+\paragraph{Low Rank approximation}
+make the SVD reduce $\Sigma$ and multipy it together
+
+\[
+    N = U\Sigma V^{\mathsf{H}} \approx \tilde{N} = U_k\Sigma_kV_k^{\mathsf{H}}
+\]
+
+\subsubsection{Minimal Realization}
+Eliminate uncontrollable parts by similar transformation with $U^{\mathsf{H}}$ which can be obtained from the SVD of the controllability matrix
+\[
+    \tilde{x}=U^{\mathsf{H}}x,\quad\tilde{A}=U^{\mathsf{H}}A U,\quad\tilde{B}=U^{\mathsf{H}}B,\quad\tilde{C}=CU,\quad\tilde{D}=D
+\]

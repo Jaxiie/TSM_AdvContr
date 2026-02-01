@@ -27,11 +27,13 @@ For a MIMO system with $M$ inputs and $P$ outputs, $G(s)$ is a $P \times M$ matr
 \begin{align*}
     G(s) &= \frac{Y(s)}{U(s)} = \frac{b_{m} s^{m} + b_{m-1} s^{m-1} +\cdots+b_{1} s 
     + b_{0}}{s^{n} + a_{n-1} s^{n-1} + \cdots + a_{1} s + a_{0}} \\
-    &= C (sI-A)^{-1} B + D
+    \text{State space to TF:}\\
+    &\Rightarrow C (sI-A)^{-1} B + D
 \end{align*}
 The inversion of $G(s)$ to find a state space description is not unique.
+every system has one TF representation, if it is minimal.
 
-\subsubsection{Controllable Canonical Form}
+\subsubsection{Controllable Canonical Form (for controller design)}
 The controllable canonical form uses a slightly different I/O-description:
 \[
     G(s) = \frac{Y(s)}{U(s)} = \frac{b_{n-1} s^{n-1} + b_{n-2} s^{n-2} +\cdots+b_{1} s 
@@ -54,7 +56,7 @@ which corresponds to
     D_c &= d
 \end{align*}
 
-\subsubsection{Observable Canonical Form}
+\subsubsection{Observable Canonical Form (for observer design: Pole placement)}
 \begin{align*}
     A_o &= \begin{bmatrix}
         0 & 0 & \dots & -a_0 \\
@@ -64,11 +66,17 @@ which corresponds to
     \end{bmatrix} &
     B_o &= \begin{bmatrix}
         b_0 \\ b_1 \\ \vdots \\ b_{n-1}
-    \end{bmatrix} \\
+    \end{bmatrix} \\      
     C_o &= \begin{bmatrix}
         0 & \dots & 0 & 1
     \end{bmatrix} & 
     D_o &= d
+\end{align*}
+
+\begin{align*}
+        A_o &= A_c^{\mathsf{T}}\\
+        B_o &= C_c^{\mathsf{T}}\\
+        D_o &= D_c^{\mathsf{T}}
 \end{align*}
 
 \subsection{Similarity Transform}
@@ -99,25 +107,25 @@ with $n$ integrators.
 A state space describtion is controllable \emph{and} observable if (and only if) it is minimal.
 
 \paragraph{Controllability}A pair $(A,B)$ is controllable if an input $u(t)$ can transfer any
-initial state $x(0)$ into another state $x(T)$ in finite time $T$.
-It is controllable if the eigenvalues of $A-BK$ can be placed arbitrarily, thus$P_c$ has full rank:
+initial state $x(0)$ into any another state $x(T)$ in finite time $T$.
+It is controllable if the eigenvalues of $A-BK$, which are the poles of the closed-loop, can be placed arbitrarily, thus $P_c$ has full rank:
 \[
-    \rank(P_c) = \rank(
+    \rank(P_c) = \rank\left(
         \begin{bmatrix}
             B & AB & A^2B & \dots & A^{n-1}B
         \end{bmatrix}
-    ) = n
+    \right) \overset{!}{=} n
 \]
 
 \paragraph{Observability}A pair $(A,C)$ is observable if the initial state $x(0)$ can
 be determined from the observation of $y(t)$ given the control $u(t)$ within finite time $T$.
 It is observable, if the eigenvalues of $A-HC$ can be placed arbitrarily, thus $P_o$ has full rank:
 \[
-    \rank(P_o) = \rank(
+    \rank(P_o) = \rank\left(
         \begin{bmatrix}
             C \\ C A \\ \vdots \\ C^{n-1}
         \end{bmatrix}
-    ) = n
+    \right) \overset{!}{=} n
 \]
 
 \subsection{Stability}
