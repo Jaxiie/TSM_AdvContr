@@ -1,0 +1,103 @@
+\section{Loop Shaping}
+Controller design in frequency domain is loop shaping.
+The open-loop gain should be shaped, that for a good \(S(s)\) and \(T(s)\).
+This can also achieved in the closed-loop with the \(H_\infty\)-control.
+
+\subsection{Loop Gain (open-loop)}
+$$L(s):=\ G_{p}(s)G_{c}(s)$$
+stability criterion: critical point \(-1\) always on the left in the Nyuist plot.
+
+\subsection{Return Difference}
+$$D(s):=1+L(s)=1+\;G_{p}(s)G_{c}(s)$$
+large teh is desired
+
+\subsection{Sensitivity}
+general we want \(S(s)\) to be small, so external signals have little effects
+$$S(s):=\frac{e(s)}{r(s)}=\frac{1}{D(s)}=\frac{1}{1+L(s)}=\frac{1}{1+G_{p}(s)G_{C}(s)}=\frac{y(s)}{d(s)}$$
+
+\subsection{Complementary Sensitivity}
+\(T(s)\) should be close to \(1\)
+$$T(s):=\frac{y(s)}{r(s)}=\frac{L(s)}{1+L(s)}=\frac{G_{p}(s)G_{c}(s)}{1+G_{p}(s)G_{c}(s)}$$
+
+For optimal tracking \(|T(s)|=1\) for all frequencies, due to limited controller bandwidth this \emph{cannot} be achieved.
+
+\subsection{Specification}
+
+\begin{minipage}{10cm}
+    \begin{itemize}
+        \item Bandwidth \(\omega_B=0 dB\)
+        \item High \(L\) at low frequencies
+        \begin{itemize}
+            \item good tracking and disturbance rejection
+            \item lower margin
+        \end{itemize}
+        \item Low \(L\) at high frequencies
+        \begin{itemize}
+            \item robustness against unmodelled dynamics
+            \item upper margin
+        \end{itemize}
+    \end{itemize}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}{8cm}
+    \centering
+    \includegraphics[width=\linewidth]{./bilder/specL.png}
+\end{minipage}
+
+\begin{minipage}{10cm}
+    put lower margin around crossover frequency
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}{8cm}
+    \centering
+    \includegraphics[width=\linewidth]{./bilder/specD.png}
+\end{minipage}
+
+\begin{minipage}{10cm}
+    \begin{itemize}
+        \item Low \(|S|\) at low frequencies
+        \begin{itemize}
+            \item good disturbance rejection
+            \item upper margin
+        \end{itemize}
+        \item Little overshoot at crossover frequency
+        \begin{itemize}
+            \item upper margin
+        \end{itemize}        
+    \end{itemize}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}{8cm}
+    \centering
+    \includegraphics[width=\linewidth]{./bilder/specS.png}
+\end{minipage}
+
+\begin{minipage}{10cm}
+    \begin{itemize}
+        \item Low \(T\) close to \(1\) in low frequency range
+        \item Little overshoot at crossover frequency
+        \begin{itemize}
+            \item upper margin
+        \end{itemize}
+        \item Steep roll-off at high frequency range
+        \begin{itemize}
+            \item upper margin
+        \end{itemize}    
+    \end{itemize}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}{8cm}
+    \centering
+    \includegraphics[width=\linewidth]{./bilder/specT.png}
+\end{minipage}
+
+\subsection{From open-loop to closed-loop}
+Low frequency is until \(L\) crosses \(20 dB\)
+
+\includegraphics[width=\linewidth]{./bilder/lowLtoSorT.png}
+
+High frequency is from where \(L\) crosses \(-20 dB\)
+
+\includegraphics[width=\linewidth]{./bilder/highLtoSorT.png}
+
+The overshoot is where \(L\) crosses the unit circle in the Nyquist plot.

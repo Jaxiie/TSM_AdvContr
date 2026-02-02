@@ -6,8 +6,8 @@
 \subsection{Norms for signals and systems}
 The $\mathcal{L}_2$ (euclidian norm) of continuous signal $u$ or a vector-valued signal $\mathbf{u}$ is
 \begin{align*}
-    ||u||_2 &= \sqrt{\int_{-\infty}^{\infty} u^2(t) dt} &
-    ||\mathbf{u}||_2 = \sqrt{\int_{-\infty}^{\infty} \mathbf{u}^T \mathbf{u} dt}
+    ||u||_2 &= \sqrt{\int_{-\infty}^{\infty} u^2(t)\, dt} &
+    ||\mathbf{u}||_2 = \sqrt{\int_{-\infty}^{\infty} \mathbf{u}^T \mathbf{u}\, dt}
 \end{align*}
 
 The $\mathcal{H}_2$ norm of a \emph{stable} system $G(s)$ is defined as the $\mathcal{L}_2$
@@ -18,6 +18,20 @@ This equals the peak magnitude in the Bode diagram of the transfer function $G(j
 \[
     ||G||_{\infty} = \sup_{u \in \mathcal{L}_2} \frac{||y||_2}{||u||_2} = \sup_{\omega} |G(j\omega)|
 \]
+
+MIMO: $\left|\left|G\right|\right|_{\infty}=\underset{\omega}{\mathrm{max}}\,\bar{\sigma}\big(G(j\omega)\big)$ (max of largest singular value $\overline{\sigma}$)
+
+SISO: $||G||_{\infty}=\operatorname*{max}_{\omega}|G(j\omega)|$ (max value of $|G(j\omega)|$)
+\hspace{0.5cm}
+
+Cauchy-Schwarz-inequality: (serial $G$s)
+
+$$||G_{1}\cdot G_{2}||_{\infty}\leq ||G_{1}||_{\infty}\cdot ||G_{2}||_{\infty}$$
+
+parallel $G$s
+
+$$\left| \left| \begin{bmatrix}G_{1} \\ Gs\end{bmatrix} \right| \right|_{\infty}\leq 1\Rightarrow||G_{1}||_{\infty}\leq 1,\  ||G_{2}||_{\infty}\leq 1$$
+
 
 \subsection{The Nyquist Criterion and the Small Gain Theorem}
 
@@ -61,34 +75,35 @@ for closed loop stability.
     question arises, how large $\Delta_a(s)$ can become
     before becoming unstable.
     
-    The feedback seen by $\Delta_a$ is $\frac{-C}{1+P_0 C}$.
+    The feedback seen by $\Delta_a$ is $\frac{-G_C}{1+G_{p0} G_C}$.
     A sufficient condition for the stability using the small gain theorem is therefore
     \begin{align*}
-        \left\lVert \Delta_a \cdot \frac{-C}{1+P_0 C}\right\rVert_{\infty} < 1 && \Leftrightarrow &&
-        ||\Delta_a||_{\infty} < \frac{1}{\left\lVert \frac{C}{1+P_0C} \right\rVert_{\infty}}
+        \left\lVert \Delta_a \cdot \frac{-G_C}{1+G_{p0} G_C}\right\rVert_{\infty} < 1 && \Leftrightarrow &&
+        ||\Delta_a||_{\infty} < \frac{1}{\left\lVert \frac{-G_C}{1+G_{p0} G_C} \right\rVert_{\infty}}\\
+        && \Leftrightarrow &&||\Delta_a||_{\infty} <\frac{1}{\left\lVert-G_CS\right\rVert_{\infty}}
     \end{align*}
 \end{minipage}
 \hspace{0.5cm}
 \begin{minipage}{8cm}
     \centering
-    \includegraphics[width=7cm]{bilder/rob_smallgain.png}
+    \includegraphics[width=7cm]{bilder/rob_smallgain (2).png}
 \end{minipage}
 
 The Bode integral theorem states that
 \[
-    \int_{0}^{\infty} \ln |S(j\omega)| d\omega = \pi \sum_{\text{unstable poles $p$ of $L(s)$}} \Re(p)
+    \int_{0}^{\infty} \ln |S(j\omega)|\, d\omega = \pi \sum_{i} \Re(p_i)-\frac{\pi}{2}\lim_{s\to \infty}\cdot L(s), \quad \text{unstable poles $p_i$ of $L(s)$}
 \]
 
 \subsection{Unstructured Uncertainty}
 
-\begin{minipage}[b]{0.5\linewidth}
-    \paragraph{Additive Uncertainty}~\\
+\begin{minipage}[t]{0.49\linewidth}
+    \paragraph{Additive Uncertainty}
     \begin{center}
-        \includegraphics[width=4cm]{bilder/rob_add.png}
+        \includegraphics[height=1.5cm]{bilder/rob_add (2).png}
     \end{center}
     Transfer function:
     \[
-        P(s) = P_0(s) + \Delta_a(s)
+        G_P(s) = G_{p0}(s) + \Delta_a(s)
     \]
     and
     \[
@@ -102,17 +117,17 @@ The Bode integral theorem states that
     
     From the small gain theorem, the perturbed system is stable if
     \[
-        ||\Delta_a||_{\infty} < \frac{1}{\left\lVert\frac{C}{1+P_0C}\right\rVert_{\infty}}
+        ||\Delta_a||_{\infty} < \frac{1}{\left\lVert\frac{G_C}{1+G_{p0}G_C}\right\rVert_{\infty}}=\frac{1}{\left\lVert G_CS\right\rVert_{\infty}}
     \]
 \end{minipage}
-\begin{minipage}[b]{0.5\linewidth}
-    \paragraph{Multiplicative Uncertainty}~\\
+\begin{minipage}[t]{0.49\linewidth}
+    \paragraph{Multiplicative Uncertainty}
     \begin{center}
-        \includegraphics[width=4cm]{bilder/rob_mult.png}
+        \includegraphics[height=1.5cm]{bilder/rob_mult (2).png}
     \end{center}
     Transfer function:
     \[
-        P(s) = P_0(s) \cdot (1 + \Delta_m(s))
+        G_p(s) = G_{p0}(s) \cdot (1 + \Delta_m(s))
     \]
     and
     \[
@@ -126,64 +141,76 @@ The Bode integral theorem states that
     
     From the small gain theorem, the perturbed system is stable if
     \[
-        ||\Delta_m||_{\infty} < \frac{1}{\left\lVert\frac{P_0C}{1+P_0C}\right\rVert}
+        ||\Delta_m||_{\infty} < \frac{1}{\left\lVert\frac{G_{p0}G_C}{1+G_{p0}G_C}\right\rVert}=\frac{1}{\left\lVert T\right\rVert_{\infty}}
     \]
 \end{minipage}
+
 \vspace{0.5em}
 
 In the SISO case, additive uncertainty can be recast into multiplicative
 uncertainty by
 \[
-    P_0(s) \Delta_m(s) = \Delta_a(s)
+    G_{p0}(s) \Delta_m(s) = \Delta_a(s)
 \]
 
 \paragraph{Dead time}An uncertain dead-time can be described as multiplicative uncertainty
 \begin{align*}
-    P(s) = P_0(s) \cdot e^{-sT} && \Leftrightarrow && \Delta_m(s) = e^{-sT} - 1
+    G_p(s) = G_{p0}(s) \cdot e^{-sT} && \Leftrightarrow && \Delta_m(s) = e^{-sT} - 1
 \end{align*}
 
 \subsection{Linear Fractional Transformation (LFT)}
 \begin{minipage}{12cm}
     The plant can be partitioned according to the dimensions of $\Delta$
     \[
-        P = \begin{bmatrix}
+        P_g = \begin{bmatrix}
             P_{11} & P_{12} \\
             P_{21} & P_{22}
         \end{bmatrix}
     \]
+
+    which corresponds to
+    \[
+        e = \left( P_{22} + P_{21} \Delta(I-P_{11}\Delta)^{-1} P_{12} \right) u
+    \]
+    We define the upper \emph{linear fractional transformation} (LFT) of $P$ and $\Delta$ as
+    \[
+        \mathcal{F}(P_g,\Delta) = P_{22} + P_{21} \Delta (I-P_{11}\Delta)^{-1} P_{12}
+    \]
+    an the lower LFT is
+    \[
+        \mathcal{F}(P_g,G_C) = P_{11} + P_{12} G_C (I-P_{22}G_C)^{-1} P_{21}
+    \]
+
 \end{minipage}
 \hspace{0.5cm}
 \begin{minipage}{6cm}
     \centering
-    \includegraphics[width=4cm]{bilder/rob_lft.png}
+    \includegraphics[width=4cm]{bilder/rob_lftupper.png}
+
+    \vspace{1cm}
+
+    \includegraphics[width=4cm]{bilder/rob_lftlower.png}
 \end{minipage}
 
-which corresponds to
-\[
-    z = \left( P_{22} + P_{21} \Delta(I-P_{11}\Delta)^{-1} P_{12} \right) w
-\]
-We define the \emph{linear fractional transformation} (LFT) of $P$ and $\Delta$ as
-\[
-    \mathcal{F}(P,\Delta) = P_{22} + P_{21} \Delta (I-P_{11}\Delta)^{-1} P_{12}
-\]
+
 
 Additive and multiplicative uncertainties are special cases of the LFT:
 \begin{align*}
     \text{Additive:} \quad
-    P = \begin{bmatrix}
-        0 & I \\ I & P_0
+    P_{ga} = \begin{bmatrix}
+        0 & I \\ I & G_{p0}
     \end{bmatrix}
     &&
     \text{Multiplicative:} \quad
-    P = \begin{bmatrix}
-        0 & P_0 \\ I & P_0
+    P_{gm} = \begin{bmatrix}
+        0 & I \\ G_{p0} & G_{p0}
     \end{bmatrix}
 \end{align*}
 
 \subsection{Structured Uncertainty}
 Concrete physical parameters and tolerances can be modeled using structured uncertainties.
 A structured uncertainty leads to a \emph{static diagonal} block $\Delta$. The diagonal
-elements are \emph{real-valued}.
+elements are \emph{real-valued}. The diagonal elements of \(\Delta\) are physical parameters.
 (In contrast to mostly complex-valued, norm-bounded transfer functions $\Delta(s)$ as in unstructured uncertainties.)
 
 \subsection{\texorpdfstring{The Standard $\bm{\mathcal{H}}_{\bm{\infty}}$ Problem}{The Standard H-inf Problem}}
@@ -191,38 +218,128 @@ The $\mathcal{H}_{\infty}$ design is to create robust controllers.
 A system which is stable with all possible uncertainties of a plant is called
 \emph{robustly stable}.
 
-From the small gain theorem, it follows that a system is robustly stable, if
-\begin{align*}
-    \text{Additive:}\quad&
-    ||W_2 C(I+PC)^{-1}||_{\infty} \leq 1 \\
-    \text{Multiplicative:}\quad&
-    ||W_2 PC(I+PC)^{-1}||_{\infty} \leq 1
-\end{align*}
-Further, the sensitivity function $S=(I+PC)^{-1}$ must meet the condition
-\begin{align*}
-    || \gamma W_1 (I+PC)^{-1} ||_{\infty} \leq 1 
-    && \Rightarrow &&
-    S(j\omega) \leq \frac{1}{|W_1(j\omega)|}
-\end{align*}
-where $\gamma$ is an optimization parameter. 
-The larger $\lambda$, the better the disturbance attenuation.
-A controller is now created by solving the optimization problem:
-\begin{align*}
-    \text{Additive:}\quad&
-    \max_{\lambda} \left\lVert \begin{bmatrix}
-        \lambda W_1(s) (I+PC)^{-1} \\
-        W_{2a}(s) C (I+PC)^{-1}
-    \end{bmatrix} \right\rVert_{\infty} = 1
-    \\
-    \text{Multiplicative:}\quad&
-    \max_{\lambda} \left\lVert \begin{bmatrix}
-        \lambda W_1(s) (I+PC)^{-1} \\
-        W_{2m}(s) PC (I+PC)^{-1}
-    \end{bmatrix} \right\rVert_{\infty} = 1
-\end{align*}
+\[T_{zw}=F_l(P_{aug},G_C)\Rightarrow||T_{zw}||_\infty\max_{w\neq0}\frac{||z||_2}{||w||_2}\]
+
+Find the $G_C$ that minimizes \(||T_{zw}||_\infty\)
+
+\begin{minipage}{12cm}
+    The augumeted plant perturbed with \(\Delta\), exogenous inputs \(w\) \((r, d, \dots)\) and exogenous outputs \(z\) \(e, u, \dots\).
+    Find the sabilizing controller \(G_C\), where \(T_{zw}\) is given by
+    \[
+        T_{z w}=F_{u}(F_{l}(P_{aug},G_{c}),\Delta)
+    \]
+    under the worst-case \(\Delta\)
+    \[
+        ||T_{z w}||_{\infty}=\max_{w\neq0}\frac{||z||_{2}}{||w||_{2}}\qquad\qquad\min_{C}(\max_{\Delta}||T_{z w}||_{\infty})
+    \]
+
+
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}{6cm}
+    \centering
+    \includegraphics[width=4cm]{bilder/rob_lftul.png}
+\end{minipage}
+
+\subsection{Performance specification}
+Minimizing \(||S||_\infty\) ensures robustness, but no good disturbance rejection at low frequencies (bad performance).
+Minimizing \(||T||_\infty\) avoids resonance behavior at cross-over, but does neither lead to good tracking nor to robustness. 
+
+Instead of directly Minimizing \(S\) introduce a weighting function \(W_1S\).
+\[
+    \min_{C}(||S||_{\infty})\Rightarrow\min_{C}(||W_{1}S||_{\infty})
+\]
+\(W_{1}S\) is used to shape \(S\)
+\[
+    W_{1}(s)=\hat{S}(s)^{-1}
+\]
+Design a weighting function to shape \(S\)
+Matlab \dq W = makeweight(GDC,wB,GHF,n); \dq{}
+
+\subsection{Mixed Sensitivity}
+% From the small gain theorem, it follows that a system is robustly stable, if
+\begin{minipage}{10cm}
+    \begin{align*}
+        \text{Additive:}\quad&
+        ||W_{2a}G_CS||_{\infty} \leq 1 \\
+        \text{Multiplicative:}\quad&
+        ||W_{2m}T||_{\infty} \leq 1
+    \end{align*}
+    combined with Performance weighting
+    \[
+        ||W_{1}S||_{\infty}< 1
+    \]
+    results in 
+    \[
+    \begin{Vmatrix}
+        W_{1}S\\
+        W_{2a}G_CS
+    \end{Vmatrix}_\infty<1
+    \qquad\qquad
+    \begin{Vmatrix}
+        W_{1}S\\
+        W_{2m}T
+    \end{Vmatrix}_\infty<1
+    \]
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}{8cm}
+    \centering
+    \includegraphics[width=8cm]{bilder/rob_hinf_w.png}
+\end{minipage}
+
+% Further, the sensitivity function $S=(I+PC)^{-1}$ must meet the condition
+% \begin{align*}
+%     || \gamma W_1 (I+PC)^{-1} ||_{\infty} \leq 1 
+%     && \Rightarrow &&
+%     S(j\omega) \leq \frac{1}{|W_1(j\omega)|}
+% \end{align*}
+% where $\gamma$ is an optimization parameter. 
+% The larger $\lambda$, the better the disturbance attenuation.
+% A controller is now created by solving the optimization problem:
+% \begin{align*}
+%     \text{Additive:}\quad&
+%     \max_{\lambda} \left\lVert \begin{bmatrix}
+%         \lambda W_1(s) (I+PC)^{-1} \\
+%         W_{2a}(s) C (I+PC)^{-1}
+%     \end{bmatrix} \right\rVert_{\infty} = 1
+%     \\
+%     \text{Multiplicative:}\quad&
+%     \max_{\lambda} \left\lVert \begin{bmatrix}
+%         \lambda W_1(s) (I+PC)^{-1} \\
+%         W_{2m}(s) PC (I+PC)^{-1}
+%     \end{bmatrix} \right\rVert_{\infty} = 1
+% \end{align*}
+
+\vspace{0.5cm}
+
 This is equivalent to finding a controller $C$, for which
 \[
-    ||\mathcal{F}(P,C)||_{\infty} = ||P_{11} + P_{12}C(I-P_{22}C)^{-1} P_{21}||_{\infty} = 1
+    ||\mathcal{F}(P_{aug},G_C)||_{\infty} = ||P_{11} + P_{12}G_C(I-P_{22}G_C)^{-1} P_{21}||_{\infty} = 1
+\]
+
+\subsection{\texorpdfstring{$\bm{\mathcal{H}}_{\bm{\infty}}$ Synthesis}{H-inf Synthesis}}
+
+The optimization solution is not unique. 
+In practical design it is sufficient to find a stabilizing \(G_C\) such that \(||T_{zw}||_\infty\) is less than a samm positive number
+\[
+    ||T_{z w}||_{\infty}=F_{l}(P_{a u g},G_{C})< \gamma
+\]
+This is the suboptimal solution of \(H_\infty\) because
+\[
+    \gamma > \gamma_{0}=\min_{C}||F_{l}(P_{a u g},G_{C}||_{\infty}
+\]
+results in 
+\[
+\begin{Vmatrix}
+    W_{1}S\\
+    W_{2a}G_CS
+\end{Vmatrix}_\infty<\gamma
+\qquad\qquad
+\begin{Vmatrix}
+    W_{1}S\\
+    W_{2m}T
+\end{Vmatrix}_\infty<\gamma
 \]
 
 \paragraph{State Space Solution}~\\
@@ -231,23 +348,37 @@ This is equivalent to finding a controller $C$, for which
     \begin{align*}
         \dot{x} &= Ax + B_1 w + B_2 u \\
         z &= C_1 x + D_{11} w + D_{12} u \\
-        y &= C_2 x + D_{21}w + D_{22} u
+        e &= C_2 x + D_{21}w + D_{22} u
     \end{align*}
+    
     with the general system matrix
     \[
-        G_s = \begin{bmatrix}
+        \Rightarrow \qquad
+        \begin{bmatrix}
+            \dot{x}\\
+            z\\
+            e
+        \end{bmatrix}=
+        \underbrace{\begin{bmatrix}
             A & \vdots & B_1 & B_2 \\
             \dots & & \dots & \dots \\
             C_1 & \vdots & D_{11} & D_{12} \\
             C_2 & \vdots & D_{21} & D_{22}
+            \end{bmatrix}}_{G_s}
+        \begin{bmatrix}
+            x\\
+            w\\
+            u
         \end{bmatrix}
     \]
 \end{minipage}
 \hspace{0.5cm}
 \begin{minipage}{8cm}
     \centering
-    \includegraphics[width=4cm]{bilder/hinf_statespace.png}
+    \includegraphics[width=6cm]{bilder/hinf_statespace (2).png}
 \end{minipage}
+
+\vspace{0.5cm}
 
 An optimal closed solution for the general system is not known. 
 A closed solution for the following special case does exist:
@@ -259,5 +390,11 @@ A closed solution for the following special case does exist:
         C_2 & \vdots & \begin{bmatrix}0&I\end{bmatrix} & 0
     \end{bmatrix}
 \]
+The Controller contains a full state oberver with optimal state feedback.
+
 Among other conditions, the $\mathcal{H}_{\infty}$ problem must have
-a solution at $\omega = \infty$. The weighting functions $W$ must ensure this.
+a solution at $\omega = 0$ and $\omega = \infty$. 
+The weighting functions $W$ must ensure this.
+
+\paragraph{Typical Weighting Functinos}
+\includegraphics[width=\linewidth]{bilder/rob_hinf_wfunc.png}
